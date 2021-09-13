@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<!-- Head -->
+
+<head th:replace="common/head"></head>
+
+<body>
+   <!-- Nav -->
+   <nav th:replace="common/nav"></nav>
+
+   <div class="container">
+      <div class="container login-container">
+         <div class="row">
+            <div class="col-md-6 login-form-1">
+               <h3>로그인</h3>
+               <form method="POST">
+                  <div class="form-group">
+                     <input type="text" class="form-control" placeholder="이메일" name="userEmail" />
+                  </div>
+                  <div class="form-group">
+                     <input type="password" class="form-control" placeholder="패스워드" name="userPassword" />
+                  </div>
+                  <div class="form-group">
+                     <input type="submit" id="login" class="btnSubmit userButton" value="로그인" />
+                  </div>
+                  <div class="form-group">
+                     <button type="button" onclick="location.href='/signUp'">회원가입</button>
+                  </div>
+               </form>
+            </div>
+         </div>
+      </div>
+   </div>
+   <!--로그인 버튼 클릭시 form태그에서 입력된 값을 name에 일치하는 변수로 전달하여서 컨트롤러에서 받는다-->
+   <script>
+      $("#login").click(function() {
+      $("form").submit();
+      return false;
+      });
+   </script>
+
+   <!-- footer -->
+   <footer th:replace="common/footer"></footer>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</html>

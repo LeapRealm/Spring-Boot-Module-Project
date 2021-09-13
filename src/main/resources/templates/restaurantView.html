@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+
+<!-- Head -->
+
+<head th:replace="common/head"></head>
+<style>
+	.conId{
+      width: 1300px;
+      margin: 0 auto;
+   }
+	.overlaybox {
+		position: relative;
+		width: 360px;
+		height: 400px;
+		background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/box_movie.png') no-repeat;
+		padding: 15px 10px;
+	}
+
+	.overlaybox div {
+		overflow: hidden;
+		margin: 0;
+		padding: 0;
+	}
+	
+	.ulC{
+		overflow: hidden;
+		margin: 0;
+		padding: 0;
+	}
+
+	.overlaybox li {
+		list-style: none;
+	}
+
+	.overlaybox .boxtitle {
+		color: #fff;
+		font-size: 16px;
+		font-weight: bold;
+		background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/arrow_white.png') no-repeat right 120px center;
+		margin-bottom: 8px;
+	}
+
+	.overlaybox .first {
+		position: relative;
+		width: 247px;
+		height: 136px;
+		margin-bottom: 8px;
+	}
+
+	.first .text {
+		color: #fff;
+		font-weight: bold;
+	}
+
+	.first .restaurantTitle {
+		position: absolute;
+		width: 100%;
+		bottom: 0;
+		background: rgba(0, 0, 0, 0.4);
+		padding: 7px 15px;
+		font-size: 14px;
+	}
+
+	.overlaybox ul {
+		width: 247px;
+	}
+
+	.overlaybox li {
+		position: relative;
+		margin-bottom: 2px;
+		background: #2b2d36;
+		padding: 5px 10px;
+		color: #aaabaf;
+		line-height: 1;
+	}
+
+	.overlaybox li span {
+		display: inline-block;
+	}
+
+	.overlaybox li .kategorie {
+		font-size: 14px;
+		font-weight: bold;
+	}
+
+	.overlaybox li .title {
+		font-size: 13px;
+		color: white
+	}
+
+	.row.content {
+		height: 1500px
+	}
+
+	.sidenav {
+		background-color: #f1f1f1;
+		height: 900px;
+	}
+
+	h4 {
+		text-align: center;
+
+		margin-top: 1.33em;
+
+		margin-bottom: 1.33em;
+
+		margin-left: 0;
+
+		margin-right: 0;
+
+		font-weight: bold;
+	}
+</style>
+
+<body>
+	<!-- Nav -->
+	<nav th:replace="common/nav"></nav>
+
+	<div class="container">
+		<div class="row content">
+			<div class=".col-xs-6 .col-sm-4">
+				<div id="roadview" style="width:100%; height:100%; margin:0 auto;"></div>
+			</div>
+			<div class=".col-xs-6 .col-sm-4">
+				<div id="map" style="width:100%; height:100%; margin:0 auto;"></div>
+			</div>
+		</div>
+	</div>
+	<div class="jumbotron jumbotron-fluid">
+		<div class="container">
+			<form method="post" th:action="@{/restaurant/} + ${restaurant.id}">
+				<div class="form-group">
+					<label for="content">후기:</label>
+					<textarea class="form-control" rows="5" name="Review" id="review">
+					</textarea>
+				</div>
+				<button type="button" id="complete" class="btn btn-primary btn-block">
+					글쓰기
+				</button>
+			</form>
+		</div>
+	</div>
+	<div class= "conId">
+	<table class="table table-striped">
+	  <tbody>
+		<tr th:each="review : ${review}" th:if="${restaurant.id}==${review.restaurantNum}">
+		<td th:text="${review.userName}"><br></td>
+		<td th:text="${review.review}"><br></td>
+		</td>
+		</tr>
+	  </tbody>
+	</table>
+
+	</div>
+	<script type="text/javascript"
+		src="http://dapi.kakao.com/v2/maps/sdk.js?appkey=cfe53d76acf5920d3dd1be0ee2bc8f9a"></script>
+	<script>
+
+		var obj = {
+			image: "[[${restaurant.image}]]",
+			name: "[[${restaurant.bsnsNm}]]",
+			menu: "[[${restaurant.menu}]]",
+			tel: "[[${restaurant.tel}]]",
+			addrjibun: "[[${restaurant.addrJibun}]]",
+			dateday: "[[${restaurant.dataDay}]]",
+			lat: "[[${restaurant.lat}]]",
+			lng: "[[${restaurant.lng}]]",
+		};
+		
+		var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+			mapCenter = new kakao.maps.LatLng(obj.lat, obj.lng), // 지도의 중심 좌표
+			mapOption = {
+				center: mapCenter, // 지도의 중심 좌표
+				level: 4 // 지도의 확대 레벨
+			};
+
+		// 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
+		var map = new kakao.maps.Map(mapContainer, mapOption);
+		
+		//주소 부산광역시 제거
+		var addrjibun = obj.addrjibun;
+		addrjibun = addrjibun.substr(6, addrjibun.length);	
+
+		var content = '<div class="overlaybox">' +
+			'    <div class="boxtitle">모범 음식점</div>' +
+			'    <div class="first" >' +
+			'		 <img src="/img/' + obj.image + '" class="img-fluid rounded-start" alt="...">' +
+			'        <div class="restaurantTitle text">' + obj.name + '</div>' +
+			'    </div>' +
+			'    <ul class="ulC">' +
+			'        <li class="up">' +
+			'            <span class="kategorie">메인메뉴: </span>' +
+			'            <span class="title">' + obj.menu + '</span>' +
+			'        </li>' +
+			'        <li>' +
+			'            <span class="kategorie">전화번호: </span>' +
+			'            <span class="title">' + obj.tel + '</span>' +
+			'        </li>' +
+			'        <li>' +
+			'            <span class="kategorie">지정날짜: </span>' +
+			'            <span class="title">' + obj.dateday + '</span>' +
+			'        </li>' +
+			'        <li>' +
+			'            <span class="kategorie">주소: </span>' +
+			'            <span class="title">' + addrjibun + '</span>' +
+			'        </li>' +
+			'    </ul>' +
+			'</div>';
+
+		// 커스텀 오버레이가 표시될 위치입니다 
+		var position = new kakao.maps.LatLng(obj.lat, obj.lng);
+
+		// 커스텀 오버레이를 생성합니다
+		var customOverlay = new kakao.maps.CustomOverlay({
+			position: position,
+			content: content,
+			xAnchor: 0.3,
+			yAnchor: 0.91
+		});
+		// 커스텀 오버레이를 지도에 표시합니다
+		customOverlay.setMap(map);
+
+		var rvContainer = document.getElementById('roadview'); // 로드뷰를 표시할 div
+		var rv = new kakao.maps.Roadview(rvContainer); // 로드뷰 객체 생성
+		var rc = new kakao.maps.RoadviewClient(); // 좌표를 통한 로드뷰의 panoid를 추출하기 위한 로드뷰 help객체 생성
+		var rvResetValue = {} //로드뷰의 초기화 값을 저장할 변수
+		rc.getNearestPanoId(mapCenter, 50, function (panoId) {
+			rv.setPanoId(panoId, mapCenter);//좌표에 근접한 panoId를 통해 로드뷰를 실행합니다.
+			rvResetValue.panoId = panoId;
+		});
+
+		// 로드뷰 초기화 이벤트
+		kakao.maps.event.addListener(rv, 'init', function () {
+
+			// 로드뷰에 올릴 마커를 생성합니다.
+			var rMarker = new kakao.maps.Marker({
+				map: rv //map 대신 rv(로드뷰 객체)로 설정하면 로드뷰에 올라갑니다.
+			});
+
+			// 로드뷰 마커가 중앙에 오도록 로드뷰의 viewpoint 조정 합니다.
+			var projection = rv.getProjection(); // viewpoint(화면좌표)값을 추출할 수 있는 projection 객체를 가져옵니다.
+
+			// 마커의 position과 altitude값을 통해 viewpoint값(화면좌표)를 추출합니다.
+			var viewpoint = projection.viewpointFromCoords(rMarker.getPosition(), rMarker.getAltitude());
+			rv.setViewpoint(viewpoint); //로드뷰에 뷰포인트를 설정합니다.
+
+			//각 뷰포인트 값을 초기화를 위해 저장해 놓습니다.
+			rvResetValue.pan = viewpoint.pan;
+			rvResetValue.tilt = viewpoint.tilt;
+			rvResetValue.zoom = viewpoint.zoom;
+		});
+
+		//지도 이동 이벤트 핸들러
+		function moveKakaoMap(self) {
+
+			var center = map.getCenter(),
+				lat = center.getLat(),
+				lng = center.getLng();
+
+			self.href = 'https://map.kakao.com/link/map/' + encodeURIComponent('스페이스 닷원') + ',' + lat + ',' + lng; //Kakao 지도로 보내는 링크
+		}
+
+		//지도 초기화 이벤트 핸들러
+		function resetKakaoMap() {
+			map.setCenter(mapCenter); //지도를 초기화 했던 값으로 다시 셋팅합니다.
+			map.setLevel(mapOption.level);
+		}
+
+		//로드뷰 이동 이벤트 핸들러
+		function moveKakaoRoadview(self) {
+			var panoId = rv.getPanoId(); //현 로드뷰의 panoId값을 가져옵니다.
+			var viewpoint = rv.getViewpoint(); //현 로드뷰의 viewpoint(pan,tilt,zoom)값을 가져옵니다.
+			self.href = 'https://map.kakao.com/?panoid=' + panoId + '&pan=' + viewpoint.pan + '&tilt=' + viewpoint.tilt + '&zoom=' + viewpoint.zoom; //Kakao 지도 로드뷰로 보내는 링크
+		}
+
+		//로드뷰 초기화 이벤트 핸들러
+		function resetRoadview() {
+			//초기화를 위해 저장해둔 변수를 통해 로드뷰를 초기상태로 돌립니다.
+			rv.setViewpoint({
+				pan: rvResetValue.pan, tilt: rvResetValue.tilt, zoom: rvResetValue.zoom
+			});
+			rv.setPanoId(rvResetValue.panoId);
+		}
+		//버튼 클릭시 폼 전송
+		$("#complete").click(function () {
+			$("form").submit();
+			return false;
+		});
+
+
+	</script>
+
+
+	<!-- footer -->
+	<footer th:replace="common/footer"></footer>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</html>

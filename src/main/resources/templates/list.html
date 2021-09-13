@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<!-- Head -->
+
+<head th:replace="common/head">
+</head>
+
+<body>
+   <!-- Nav -->
+   <nav th:replace="common/nav"></nav>
+
+   <div class="container">
+      <form action="" method="GET" id="selectForm">
+         <label for="gugun" class="selectLabel">구군 </label>
+         <select class="form-select" id="gugun" name="gugun" aria-label="gugun" th:name="gugun">
+            <option value="전체">전체</option>
+            <!--gugunList에서 리스트를 받아와서 반복문 실행
+            val이 반복 변수가 되고 만약 구군과 일치할 경우 selected가 적용됨
+            선택하고 검색할 경우 리스트의 0번째로 초기화가 되지 않고
+            일치하는 값으로 selected 되는 원리-->
+            <option th:each="val : ${gugunList}"   
+                        th:value="${val}"
+                        th:utext="${val}"
+                        th:selected="${val == gugun}"></option>
+         </select>
+
+         <label for="bsnsCond" class="selectLabel">업종 </label>
+         <select class="form-select" id="bsnsCond" name="bsnsCond" aria-label="bsnsCond">
+            <option value="전체">전체</option>
+            <option th:each="val : ${bsnsCondList}"
+                        th:value="${val}"
+                        th:utext="${val}"
+                        th:selected="${val == bsnsCond}"></option>
+         </select>
+         <button type="submit" class="btn btn-outline-primary" id="selectButton">검색</button>
+      </form>
+
+      <table class="table table-hover">
+         <tr>
+            <th>ID</th>
+            <th>이미지</th>
+            <th>업종</th>
+            <th>업소명</th>
+            <th>도로명 주소</th>
+         </tr>
+         <!--마찬가지로 반복문 돌려서 각 restaurant의 값을 불러와서 띄워준다.-->
+         <tr th:each="restaurant : ${restaurantList}" th:attr="id=${restaurant.id}">
+            <td th:text="${restaurant.id}"></td>
+            <td><img th:src="@{/img/}+${restaurant.image}" width="200px" height="100px;"></td>
+            <td th:text="${restaurant.bsnsCond}"></td>
+            <td th:text="${restaurant.bsnsNm}"></td>
+            <td th:text="${restaurant.addrRoad}"></td>
+         </tr>
+      </table>
+   </div>
+   <script>
+      $("tr").click(function() {
+      var id = $(this).attr("id");
+      location = "/restaurant/" + id;
+      return false;
+      });
+   </script>
+
+   <!-- footer -->
+   <footer th:replace="common/footer"></footer>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</html>

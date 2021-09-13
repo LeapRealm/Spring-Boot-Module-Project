@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<!-- Head -->
+<head th:replace="common/head"></head>
+
+<body>
+	<!-- Nav -->
+	<nav th:replace="common/nav"></nav>
+
+	<!-- Carousel -->
+	<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+		<div class="carousel-inner">
+			<div class="carousel-item active">
+				<img src="http://placehold.it/1200x500" class="d-block w-100" alt="...">
+			</div>
+			<div class="carousel-item">
+				<img src="http://placehold.it/1200x500" class="d-block w-100" alt="...">
+			</div>
+			<div class="carousel-item">
+				<img src="http://placehold.it/1200x500" class="d-block w-100" alt="...">
+			</div>
+		</div>
+		<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+			data-bs-slide="prev">
+			<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+			<span class="visually-hidden">Previous</span>
+		</button>
+		<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+			data-bs-slide="next">
+			<span class="carousel-control-next-icon" aria-hidden="true"></span>
+			<span class="visually-hidden">Next</span>
+		</button>
+	</div>
+
+	<!-- Grid -->
+	<div class="container">
+		<div id="gridTitle">정보 조회 중 입니다.</div>
+		<div class="row row-cols-1 row-cols-md-3 g-4">
+		
+		</div>
+	</div>
+
+	<!-- footer -->
+	<footer th:replace="common/footer"></footer>
+
+	<script>
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(function (position) {
+				var lat = position.coords.latitude, // 위도
+					lon = position.coords.longitude; // 경도
+
+				$.ajax({
+					url: 'https://dapi.kakao.com/v2/local/geo/coord2address.json?x=' + lon + '&y=' + lat,
+					type: 'GET',
+					headers: {
+						'Authorization': 'KakaoAK 69daf4143e20e8a8db9ffce67949b01a'
+					},
+					success: function (data) {
+						var currentLocation = data.documents[0]['address']['address_name'];
+						var strArray = currentLocation.split(" ");
+
+						$("#gridTitle").text("'" + strArray[0] + " " + strArray[1] + " " + strArray[2] + "' 근처에 있는 음식점 목록");
+
+						$.ajax({
+							url: '/json/getNearestRestaurant?addrJibun=' + strArray[1] + " " + strArray[2],
+							type: 'GET',
+							success: function (data) {
+								for(i = 0; i < data.length; i++) {
+									if (i >= 9) {
+										break;
+									}
+									
+									var addrRoadSplit = data[i].addrRoad.split(" ");
+									var addrRoad = "";
+									for (j = 2; j < addrRoadSplit.length; j++) {
+										addrRoad += addrRoadSplit[j] + " ";
+									}
+									
+									var content =   '<div class="col">' + 
+										            '    <div class="card mb-3" style="max-width: 540px;">' + 
+										            '        <div class="row g-0">' + 
+										            '            <div class="col-md-4">' + 
+										            '                <img src="https://leaprealm.com/img/' + data[i].image + '" class="img-fluid rounded-start" alt="...">' + 
+										            '            </div>' + 
+										            '            <div class="col-md-8">' + 
+										            '                <div class="card-body">' +
+										            '                    <h5 class="card-title">' + data[i].bsnsNm + '</h5>' +
+										            '				     <p class="card-text">' + data[i].menu + '</p>' + 
+										            '                    <p class="card-text">' + addrRoad + '</p>' + 
+										            '                </div>' + 
+										            '            </div>' + 
+										            '        </div>' + 
+										            '    </div>' + 
+										            '</div>';
+										            
+									$('.row-cols-1').append(content);
+								}
+							},
+							error: function (e) {
+								console.log("error");
+							}
+						});
+					},
+					error: function (e) {
+						$("#gridTitle").text("주소 변환을 사용할 수 없어요");
+					}
+				});
+			});
+		} else {
+			$("#gridTitle").text("geolocation을 사용할 수 없어요");
+		}
+	</script>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</html>

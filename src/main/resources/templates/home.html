@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<!-- Head -->
+
+<head th:replace="common/head"></head>
+
+<body>
+	<!-- Nav -->
+	<nav th:replace="common/nav"></nav>
+
+
+
+	<!-- Carousel -->
+	<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+		<div class="carousel-inner">
+			<div class="carousel-item active">
+				<img src="/img/bannerLogo.PNG" class="d-block w-100" alt="...">
+			</div>
+			<div class="carousel-item">
+				<img src="/img/rankBanner.PNG" class="d-block w-100" alt="...">
+			</div>
+			<div class="carousel-item">
+				<img src="/img/randomBanner.PNG" class="d-block w-100" alt="..." id="randomSelect">
+			</div>
+		</div>
+		<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+			data-bs-slide="prev">
+			<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+			<span class="visually-hidden">Previous</span>
+		</button>
+		<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+			data-bs-slide="next">
+			<span class="carousel-control-next-icon" aria-hidden="true"></span>
+			<span class="visually-hidden">Next</span>
+		</button>
+	</div>
+    
+	<!-- Grid -->
+	<div class="container">
+	    <div id="gridTitle">정보 조회 중 입니다.</div>
+		<div class="row row-cols-1 row-cols-md-3 g-4">
+		</div>
+	</div>
+
+	<!-- footer -->
+	<footer th:replace="common/footer"></footer>
+
+	<script>
+		// 위치 알아오기 
+		//Geolocation API 사용 
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(function (position) {
+				var lat = position.coords.latitude, // 위도
+					lon = position.coords.longitude; // 경도
+				
+				//현재 위치 좌표 주소 변환 
+				$.ajax({	//주소 검색 API 사용 
+					url: 'https://dapi.kakao.com/v2/local/geo/coord2address.json?x=' + lon + '&y=' + lat,
+					type: 'GET',
+					headers: {
+						'Authorization': 'KakaoAK 69daf4143e20e8a8db9ffce67949b01a'
+					},
+					success: function (data) {
+						var currentLocation = data.documents[0]['address']['address_name']; //지번상세주소, 전체지번주소
+						var strArray = currentLocation.split(" ");
+						//주소 분할 저장
+						
+						//길 찾기
+						var btn = document.getElementById('number');
+						btn.addEventListener('keydown', function (e) {
+							if (e.key === 'Enter') {
+								window.open('https://map.kakao.com/?sName=' + strArray + '&eName=' + document.getElementById("number").value)
+							}										//sName 출발지 eName 도착지
+						});
+						
+						$("#gridTitle").text("'" + strArray[0] + " " + strArray[1] + " " + strArray[2] + "' 근처에 있는 음식점 목록");
+						
+						$.ajax({		//주변음식점 찾기 구군만 분할	
+							url: '/json/getNearestRestaurant?addrJibun=' + strArray[1],
+							type: 'GET',
+							success: function (data) {
+								for (i = 0; i < data.length; i++) {
+									if (i >= 9) {
+										break;
+									}
+									
+									//도로명 주소 분할
+									var addrRoadSplit = data[i].addrRoad.split(" ");
+									var addrRoad = "";
+									for (j = 2; j < addrRoadSplit.length; j++) {
+										addrRoad += addrRoadSplit[j] + " ";
+									}
+
+									var content = '<div class="col">' +
+										'    <div class="card mb-3" style="max-width: 540px;">' +
+										'        <div class="row g-0">' +
+										'            <div class="col-md-4">' +
+										'                <img src="/img/' + data[i].image + '" class="img-fluid rounded-start" alt="...">' +
+										'            </div>' +
+										'            <div class="col-md-8">' +
+										'                <div class="card-body">' +
+										'                    <a href="/restaurant/' + data[i].id + '"class="idTitle" >' + data[i].bsnsNm + '</a>' +'<br>' +
+										'                 <a style="font-size: 11pt; font-weight: bold; ">' + '대표메뉴 : ' + '</a>'+ '<a style="font-size: 11pt">'+ data[i].menu +'</a>'  +
+										'                    <p class="card-text" style="font-size: 11pt;">' + '<a style="font-weight:bold; font-size: 11pt">'+'주소 : '+'</a>'+ '<a style="font-size: 11pt">'+ addrRoad + '</a>' +
+										'                </div>' +
+										'            </div>' +
+										'        </div>' +
+										'    </div>' +
+										'</div>';
+									$('.row-cols-1').append(content); //그리드 출력
+								}
+								
+								var result = 0;
+								while (result == 0) {
+									result = Math.floor(Math.random() * i);
+									}
+								
+								var randomFood = document.getElementById('randomSelect');
+
+								randomFood.addEventListener('click', func)
+								function func() {
+									location.href = "/restaurant/" + result
+								}
+							},
+							error: function (e) {
+								console.log("error");
+							}
+						});
+					},
+					error: function (e) {
+						$("#gridTitle").text("주소 변환을 사용할 수 없어요");
+					}
+				});
+			});
+		} else {
+			$("#gridTitle").text("geolocation을 사용할 수 없어요");
+		}
+	</script>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</html>

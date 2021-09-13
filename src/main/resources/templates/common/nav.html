@@ -1,0 +1,42 @@
+<div>
+
+	<!--길찾기-->
+	<a href="/"><img src="/img/mainLogo.PNG" class="main" alt="..."></a>
+	<input type="text" class="roadName" id="number" name="number" placeholder="목적지를 입력하여 길을 찾으세요.">
+	<a th:if="${session.user} == null">
+		<a href="/login">
+			<span class="glyphicon glyphicon-log-in"></span>
+			<img src="/img/LoginLogo.PNG" class="login">
+		</a>
+	</a>
+	<a th:if="${session.user} != null">
+		<a href="/logout">
+			<span class="glyphicon glyphicon-log-out"></span>
+			<img src="/img/LogoutLogo.PNG" class="logout">
+		</a>
+	</a>
+
+
+</div>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<div class="container-fluid">
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+			aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNavDropdown">
+			<ul class="navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link" href="/list" id="ListLogo"><img src="/img/ListLogo.PNG"></a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/map" id="MapLogo"><img src="/img/MapLogo.PNG"></a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/contact" id="ContactLogo"><img src="/img/ContactLogo.PNG"></a>
+				</li>
+
+			</ul>
+		</div>
+	</div>
+</nav>

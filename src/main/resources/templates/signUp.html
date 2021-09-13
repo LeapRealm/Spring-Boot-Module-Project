@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<!-- Head -->
+
+<head th:replace="common/head"></head>
+
+<body>
+   <!-- Nav -->
+   <nav th:replace="common/nav"></nav>
+
+   <div class="container">
+      <div class="container login-container">
+         <div class="row">
+            <div class="col-md-6 login-form-2">
+               <h3>회원가입</h3>
+               <form method="POST" action="/signUp">
+                  <div class="form-group">
+                     <input type="text" class="form-control" placeholder="닉네임" name="userName"/>
+                  </div>
+                  <div class="form-group">
+                     <input type="text" class="form-control" placeholder="이메일" name="userEmail"/>
+                  </div>
+                  <div class="form-group">
+                     <input type="password" class="form-control" placeholder="패스워드" name="userPassword"/>
+                  </div>
+                  <div class="form-group" >
+                     <input type="submit" id="complete" class="btnSubmit userButton" value="회원가입" />
+                  </div>
+               </form>
+            </div>
+         </div>
+      </div>
+   </div>
+
+   <!-- footer -->
+   <footer th:replace="common/footer"></footer>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<!--마찬가지로 회원가입 버튼 클릭시 컨트롤러에서 변수를 받음.-->
+<script>
+   $("#complete").click(function() {
+      $("form").submit();
+      return false;
+   });
+</script>
+
+</html>

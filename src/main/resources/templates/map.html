@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<!-- Head -->
+
+<head th:replace="common/head"></head>
+
+<body>
+	<!-- Nav -->
+	<nav th:replace="common/nav"></nav>
+
+	<div class="jumbotron">
+		<div class="container text-center">
+			<div id="map" style="width:100%; height:685px; margin:0 auto;"></div>
+		</div>
+
+		<script src="http://dapi.kakao.com/v2/maps/sdk.js?appkey=cfe53d76acf5920d3dd1be0ee2bc8f9a"></script>
+		<script>
+			//맵 생성
+			var container = document.getElementById('map');
+			var options = {
+				center: new kakao.maps.LatLng(37.4980239, 127.027572), // 강남역
+				level: 4
+			};
+			var map = new kakao.maps.Map(container, options);
+
+			// <------------- GeoLocation -------------->
+
+			// HTML5의 geolocation으로 사용할 수 있는지 확인합니다 
+			if (navigator.geolocation) {
+
+				// GeoLocation을 이용해서 접속 위치를 얻어옵니다
+				navigator.geolocation.getCurrentPosition(function (position) {
+
+					var lat = position.coords.latitude, // 위도
+						lon = position.coords.longitude; // 경도
+
+					$.ajax({
+						url: 'https://dapi.kakao.com/v2/local/geo/coord2address.json?x=' + lon + '&y=' + lat,
+						type: 'GET',
+						headers: {
+							'Authorization': 'KakaoAK 69daf4143e20e8a8db9ffce67949b01a'
+						},
+						success: function (data) {
+							var currentLocation = data.documents[0]['address']['address_name'];
+							var strArray = currentLocation.split(" ");
+
+						}
+					});
+
+					var locPosition = new kakao.maps.LatLng(lat, lon), // 마커가 표시될 위치를 geolocation으로 얻어온 좌표로 생성합니다
+						message = '갱신중';
+
+					// 마커 표시
+					displayMarker(locPosition);
+				});
+
+			} else { // HTML5의 GeoLocation을 사용할 수 없을때 마커 표시 위치와 인포윈도우 내용을 설정합니다
+
+				var locPosition = new kakao.maps.LatLng(35.239789849432775, 129.0887255155433),
+					message = 'geolocation을 사용할수 없어요..'
+
+				displayMarker(locPosition);
+			}
+
+			// 지도에 마커와 인포윈도우를 표시하는 함수입니다
+			function displayMarker(locPosition) {
+
+				// 마커를 생성합니다
+				var marker = new kakao.maps.Marker({
+					map: map,
+					position: locPosition
+				});
+
+				// 지도 중심좌표를 접속위치로 변경합니다
+				map.setCenter(locPosition);
+			}
+			// <-------------------Geolocation-------------------->
+
+			var imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
+			var imageSize = new kakao.maps.Size(24, 35);
+			var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+
+			var markerPosition = new kakao.maps.LatLng();
+			var marker = new kakao.maps.Marker({
+				position: markerPosition
+			});
+
+			iwRemoveable = true; // X표시 활성화
+
+			marker.setMap(map);
+			$.ajax({
+				url: '/map/getPoint',
+				type: 'GET',
+				success: function (res) {
+					for (var i = 0; i < res.length; i++) {
+						var marker = new kakao.maps.Marker({
+							map: map, // 마커를 표시할 지도
+							position: new kakao.maps.LatLng(res[i].lat, res[i].lng),
+							title: res[i].bsnsNm,
+							image: markerImage
+						});
+						// <------------------인포윈도우 내용------------------>
+						var iwContent = '<span class="info-title" style="text-align: center;">' +
+                     '<div style="font-weight: bold; font-size: 11pt;">' + res[i].bsnsNm + '</div>' +   
+                     '<div>' + '<img src="/img/' + res[i].image + '" width="100" height="80">' + '</div>' +
+                     '            <div class="desc" style="font-weight: bold; font-size: 9pt;">'+'대표메뉴: ' + res[i].menu +
+                     '                <div>' + res[i].tel + '</div>' + '</span>';
+						//인포윈도우 표시 위치입니다
+						iwRemoveable = true; // X표시 활성화
+
+
+						// <------------------인포윈도우 생성------------------>
+						var infowindow = new kakao.maps.InfoWindow({
+							content: iwContent,
+							position: marker.getPosition(),
+							removable: iwRemoveable// X표시 활성화
+
+						});
+						// <------------------인포윈도우 클릭했을 때 내용 표출------------------>
+						kakao.maps.event.addListener(marker, 'click', makeOverListener(map, marker, infowindow));
+						function makeOverListener(map, marker, infowindow) {
+							return function () {
+								infowindow.open(map, marker);
+							};
+						}
+						// <------------------우클릭했을 때 인포윈도우 전체 삭제------------------>
+						kakao.maps.event.addListener(map, 'rightclick', makeOutListener(infowindow));
+						function makeOutListener(infowindow) {
+							return function () {
+								infowindow.close(map, marker);
+							};
+						}
+						
+					}
+				}
+			});
+		</script>
+
+		<!-- footer -->
+		<footer th:replace="common/footer"></footer>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</html>
