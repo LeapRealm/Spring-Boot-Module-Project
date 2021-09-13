@@ -4,10 +4,10 @@
 - 한국품질재단 / 부산 클라우드 네이티브 애플리케이션 개발자 양성과정
 
 [기간]
-2021.07.19 ~ 2021.07.23
+- 2021.07.19 ~ 2021.07.23
 
 [사용 기술]
-Java / Spring Boot / Oracle DB / Thymeleaf
+- Java / Spring Boot / Oracle DB / Thymeleaf
 
 [맡은 역할]
 - 메인 페이지의 사용자 위치 기준 근처 음식점 목록 그리드 표시
