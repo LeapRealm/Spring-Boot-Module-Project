@@ -17,6 +17,9 @@
 [구현 결과]
 - 현재 위치 주변의 믿을 수 있고 맛있는 음식점을 쉽게 찾을 수 있게 됨
 
+[생성한 스프링 부트 프로젝트 도커 이미지]
+- https://hub.docker.com/repository/docker/leaprealm/spring-boot-module-project
+
 [구동 페이지]
 - https://www.springmoduleproject.kro.kr
 
