@@ -20,7 +20,7 @@ public class ContactController {
 	@ResponseBody
 	public String contactPost(String email, String comment) {
 		Mailer mailer = new Mailer();
-		mailer.sendMail("fbaa4412@naver.com", "문의내용 : " + email, comment, new SMTPAuthenticator());
+		mailer.sendMail("springteamfive@gmail.com", "문의내용 : " + email, comment, new SMTPAuthenticator());
 		return "ok";
 	}
 }
