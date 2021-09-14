@@ -9,6 +9,9 @@
 [사용 기술]
 - Java / Spring Boot / Oracle DB / Thymeleaf
 
+[사용 툴]
+- Spring Tool Suite 4 / Intellij Idea Ultimate
+
 [맡은 역할]
 - 메인 페이지의 사용자 위치 기준 근처 음식점 목록 그리드 표시
 - DB 세팅과 Open API를 사용해서 데이터 수집
