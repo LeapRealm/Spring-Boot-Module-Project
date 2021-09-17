@@ -23,9 +23,6 @@
 [생성한 스프링 부트 프로젝트 도커 이미지]
 - https://hub.docker.com/repository/docker/leaprealm/spring-boot-module-project
 
-[구동 페이지]
-- https://www.springmoduleproject.kro.kr (무료 클라우드 VM을 사용해서 불안정합니다. 양해부탁드립니다.)
-
 ![1](https://user-images.githubusercontent.com/43628076/133060073-fc53a511-4a72-4025-9931-08cd31eb385e.png)
 ![2](https://user-images.githubusercontent.com/43628076/133060077-3358ffff-1379-46f4-8009-56e399486765.png)
 ![3](https://user-images.githubusercontent.com/43628076/133060081-e082818d-1894-400e-bdaa-67cd86a91935.png)
